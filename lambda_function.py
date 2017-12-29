@@ -57,12 +57,13 @@ def get_welcome_response():
 
     session_attributes = {}
     card_title = "Welcome"
-    speech_output = "Welcome to the All Coin Price Checker.  " \
-                    "What coin are you interested in?"
+    speech_output = "Welcome to the cryptocurrency checker.  " \
+                    "Please say the name of the coin you want to know the " \
+                    "price of."
     # If the user either does not reply to the welcome message or says something
     # that is not understood, they will be prompted again with this text.
-    reprompt_text = "Please tell me the coin you are interested in by saying, " \
-                    "my coin is bitcoin."
+    reprompt_text = "Please say the name of the coin you want to know the " \
+                    "price of."
     should_end_session = False
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
@@ -70,8 +71,7 @@ def get_welcome_response():
 
 def handle_session_end_request():
     card_title = "Session Ended"
-    speech_output = "I hope your coin is doing well. " \
-                    "Have a nice day! "
+    speech_output = "Good luck with your investments!"
     # Setting this to true ends the session and exits the skill.
     should_end_session = True
     return build_response({}, build_speechlet_response(
@@ -136,11 +136,25 @@ def getValueFromSession(intent, session):
     if 'Coin' in intent['slots']:
         theCoin = intent['slots']['Coin']['value']
         nestedMaps = bittrex.get_ticker("BTC-" + acronymMap[theCoin])
+        btcPrice = bittrex.get_ticker("USDT-BTC")["result"]["Ask"]
         askingPrice = nestedMaps["result"]["Ask"]
-        speech_output = "The value of " + theCoin + " is: " + str(askingPrice)
+        dollars = round(askingPrice*btcPrice, 2)
+        dollarValue = str(dollars).split(".")[0]
+        centValue = str(dollars).split(".")[1]
+        satoshis = str(askingPrice*(10**8)).split(".")[0]
+        if dollars > 2:
+            speech_output = ("The value of " + theCoin + " is: "
+            + dollarValue + " dollars and " + centValue + " cents.")
+        elif round(dollars) == 0:
+            speech_output = ("The value of " + theCoin + " is "
+            + centValue + " cents or " + satoshis + " Satoshis.")
+        else:
+            speech_output = ("The value of " + theCoin + " is "
+            + dollarValue + " dollars and " + centValue + " cents or "
+            + satoshis + " Satoshis.")
         should_end_session = True
     else:
-        speech_output = "I do not know the coin you speak of."
+        speech_output = "I have never heard of that coin."
         should_end_session = False
     return build_response(sessionAttributes, build_speechlet_response(
         intent['name'], speech_output, repromptText, should_end_session))
