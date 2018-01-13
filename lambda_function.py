@@ -1,19 +1,44 @@
-"""
-This sample demonstrates a simple skill built with the Amazon Alexa Skills Kit.
-The Intent Schema, Custom Slots, and Sample Utterances for this skill, as well
-as testing instructions are located at http://amzn.to/1LzFrj6
-
-For additional samples, visit the Alexa Skills Kit Getting Started guide at
-http://amzn.to/1LGWsLG
-"""
-
 from __future__ import print_function
 from bittrex.bittrex import Bittrex, API_V2_0
 
 # -----Constant-----
 
-acronymMap = {"bitcoin":"BTC", "itecoin":"LTC", "verge":"XVG",
-"ripple":"XRP", "ether":"ETH"}
+acronymMap = {"bitcoin":"BTC", "litecoin":"LTC", "verge":"XVG",
+"ripple":"XRP", "ethereum":"ETH", "omise go":"OMG",
+"siacoin":"SC", "digital note":"XDN", "cardano":"ADA",
+"stellar":"XLM", "dogecoin":"DOGE", "q tum":"QTUM",
+"z classic":"ZCL", "redd coin":"RDD", "lisk":"LSK",
+"status":"SNT", "burst":"BURST", "triggers":"TRIG",
+"neo":"NEO", "nexus":"NXS", "ardor":"ARDR",
+"black coin":"BLK", "nem":"XEM", "next":"NXT",
+"ethereum classic":"ETC", "power ledger":"POWR",
+"stratis":"STRAT", "metal":"MTL", "steem":"STEEM",
+"ten x":"PAY", "fun fair":"FUN", "unikoin gold":"UKG",
+"enigma":"ENG", "ripio credit network":"RCN", "lunyr":"LUN",
+"z cash":"ZEC", "bitcoin gold":"BTG", "monero":"XMR",
+"dash":"DASH", "bitbean":"BITB", "ubiq":"UBQ",
+"waves":"WAVES", "einsteinium":"EMC2", "vertcoin":"VTC",
+"ad token":"ADT", "civic":"CVC", "syscoin":"SYS",
+"komodo":"KMD", "basic attention token":"BAT",
+"edgeless":"EDG", "salt":"SALT", "golem":"GNT",
+"e boost":"EBST", "ark":"ARK", "storj":"STORJ",
+"hemp coin":"THC", "ad ex":"ADX", "myriad":"XMY",
+"lomocoin":"LMC", "co found dot it":"CFI", "first blood":"1ST",
+"gnosis":"GNO", "match pool":"GUP",
+"music coin":"MUSIC", "block tix":"TIX", "decentraland":"MANA",
+"rise":"RISE", "groestlcoin":"GRS", "expanse":"EXP",
+"humaniq":"HMQ", "verium reserve":"VRM", "patientory":"PTOY",
+"augur":"REP", "viberate":"VIB", "synereo":"AMP",
+"sphere":"SPHR", "monetary unit":"MUE", "mona coin":"MONA",
+"okay cash":"OK", "counter party":"XCP", "folding coin":"FLDC",
+"spread coin":"SPR", "game credits":"GAME", "z coin":"XZC",
+"steem dollars":"SBD", "pot coin":"POT", "salus":"SLS",
+"geo coin":"GEO", "factom":"FCT", "decent":"DCT",
+"cannabis coin":"CANN", "nav coin":"NAV", "feather coin":"FTC",
+"internet of people":"IOP", "nubits":"NBT", "wings":"WINGS",
+"breakout stake":"BRX", "radium":"RADS", "viacoin":"VIA",
+"numeraire":"NMR", "unbreakable coin":"UNB", "pink coin":"PINK",
+"elastic":"XEL", "mercury":"MER"}
 bittrex = Bittrex(None, None)
 
 
@@ -27,8 +52,8 @@ def build_speechlet_response(title, output, reprompt_text, should_end_session):
         },
         'card': {
             'type': 'Simple',
-            'title': "SessionSpeechlet - " + title,
-            'content': "SessionSpeechlet - " + output
+            'title': title,
+            'content': output
         },
         'reprompt': {
             'outputSpeech': {
@@ -59,11 +84,11 @@ def get_welcome_response():
     card_title = "Welcome"
     speech_output = "Welcome to the cryptocurrency checker.  " \
                     "Please say the name of the coin you want to know the " \
-                    "price of."
+                    "price of.  For example, you could say bitcoin."
     # If the user either does not reply to the welcome message or says something
     # that is not understood, they will be prompted again with this text.
     reprompt_text = "Please say the name of the coin you want to know the " \
-                    "price of."
+                    "price of.  For example, you could say: bitcoin."
     should_end_session = False
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
@@ -81,83 +106,64 @@ def handle_session_end_request():
 def create_favorite_color_attributes(theCoin):
     return {"theCoin": theCoin}
 
-
-# def set_color_in_session(intent, session):
-#     """ Sets the color in the session and prepares the speech to reply to the
-#     user.
-#     """
-
-#     card_title = intent['name']
-#     session_attributes = {}
-#     should_end_session = False
-
-#     if 'Color' in intent['slots']:
-#         favorite_color = intent['slots']['Color']['value']
-#         session_attributes = create_favorite_color_attributes(favorite_color)
-#         speech_output = "I now know your favorite color is " + \
-#                         favorite_color + \
-#                         ". You can ask me your favorite color by saying, " \
-#                         "what's my favorite color?"
-#         reprompt_text = "You can ask me your favorite color by saying, " \
-#                         "what's my favorite color?"
-#     else:
-#         speech_output = "I'm not sure what your favorite color is. " \
-#                         "Please try again."
-#         reprompt_text = "I'm not sure what your favorite color is. " \
-#                         "You can tell me your favorite color by saying, " \
-#                         "my favorite color is red."
-#     return build_response(session_attributes, build_speechlet_response(
-#         card_title, speech_output, reprompt_text, should_end_session))
-
-
-# def get_color_from_session(intent, session):
-#     session_attributes = {}
-#     reprompt_text = None
-
-#     if session.get('attributes', {}) and "favoriteColor" in session.get('attributes', {}):
-#         favorite_color = session['attributes']['favoriteColor']
-#         speech_output = "Your favorite color is " + favorite_color + \
-#                         ". Goodbye."
-#         should_end_session = True
-#     else:
-#         speech_output = "I'm not sure what your favorite color is. " \
-#                         "You can say, my favorite color is red."
-#         should_end_session = False
-
-#     # Setting reprompt_text to None signifies that we do not want to reprompt
-#     # the user. If the user does not respond or says something that is not
-#     # understood, the session will end.
-#     return build_response(session_attributes, build_speechlet_response(
-#         intent['name'], speech_output, reprompt_text, should_end_session))
+## Retrieves the current price of the selected cryptocurrency
+## in both USD and Satoshis.
 
 def getValueFromSession(intent, session):
+    card_title = "Price Retrieval"
     sessionAttributes = {}
     repromptText = None
-    if 'Coin' in intent['slots']:
+    try:
         theCoin = intent['slots']['Coin']['value']
-        nestedMaps = bittrex.get_ticker("BTC-" + acronymMap[theCoin])
+    except KeyError:
+        theCoin = "";
+    if theCoin != "" and theCoin in acronymMap:
+
+        ## Gets the price of bitcoin in usd
+
         btcPrice = bittrex.get_ticker("USDT-BTC")["result"]["Ask"]
-        askingPrice = nestedMaps["result"]["Ask"]
-        dollars = round(askingPrice*btcPrice, 2)
+
+        ## If the coin is not BTC, gets the price of the coin in terms
+        ## of BTC for later conversion to dollars
+
+        if theCoin != "bitcoin":
+            nestedMaps = bittrex.get_ticker("BTC-" + acronymMap[theCoin])
+            askingPrice = nestedMaps["result"]["Ask"]
+            dollars = round(askingPrice*btcPrice, 2)
+            satoshis = str(askingPrice*(10**8)).split(".")[0]
+        else:
+            dollars = btcPrice
         dollarValue = str(dollars).split(".")[0]
         centValue = str(dollars).split(".")[1]
-        satoshis = str(askingPrice*(10**8)).split(".")[0]
         if dollars > 2:
             speech_output = ("The value of " + theCoin + " is: "
-            + dollarValue + " dollars and " + centValue + " cents.")
+                            + dollarValue + " dollars and " + centValue
+                            + " cents.  You can ask about a different coin or "
+                            + "you can end the session by saying end.")
         elif round(dollars) == 0:
             speech_output = ("The value of " + theCoin + " is "
-            + centValue + " cents or " + satoshis + " Satoshis.")
+                            + centValue + " cents or " + satoshis
+                            + " Satoshis.  You can ask about a different coin or "
+                            + "you can end the session by saying end.")
         else:
             speech_output = ("The value of " + theCoin + " is "
-            + dollarValue + " dollars and " + centValue + " cents or "
-            + satoshis + " Satoshis.")
-        should_end_session = True
+                            + dollarValue + " dollars and " + centValue
+                            + " cents or "+ satoshis
+                            + " Satoshis.  You can ask about a different coin or "
+                            + "you can end the session by saying end.")
+
+            reprompt_text = ("You can ask me the price of a coin by just saying "
+                            + " its name.  For example, you could say: bitcoin.")
+        should_end_session = False
     else:
-        speech_output = "I have never heard of that coin."
+        speech_output = ("I have never heard of that coin.  "
+                        + "You can say a different coin by saying its name, or"
+                        " you can end the session by saying end.")
+        reprompt_text = "Please say the name of the coin you want to know the " \
+                        "price of.  For example, you could say: bitcoin."
         should_end_session = False
     return build_response(sessionAttributes, build_speechlet_response(
-        intent['name'], speech_output, repromptText, should_end_session))
+        card_title, speech_output, repromptText, should_end_session))
 
 
 # --------------- Events ------------------
